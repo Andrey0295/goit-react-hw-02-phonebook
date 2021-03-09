@@ -2,35 +2,29 @@ import React, { Component } from 'react';
 import shortid from 'shortid';
 
 import Container from './components/Container/Container';
-// import MainPhoneBook from './components/MainPhoneBook/MainPhoneBook';
-
-// function App() {
-//   return (
-//     <>
-//       <Container>
-//         <div className="App">
-//           <h1>Hello react</h1>
-//         </div>
-//         <MainPhoneBook />
-//       </Container>
-//     </>
-//   );
-// }
 
 class App extends Component {
   state = {
-    contacts: [],
+    contacts: [
+      // { name: 'Andrey', id: 'id-1', number: ' 00 - 000 - 00 - 00' },
+      // { name: 'Seroga', id: 'id-2', number: '00 - 000 - 00 - 00 ' },
+      // { name: 'Alekma', id: 'id-3', number: '00 - 000 - 00 - 00' },
+    ],
     name: '',
+    number: '',
+    filter: '',
   };
 
   nameInputId = shortid.generate();
+  numberInputId = shortid.generate();
+  filterInputId = shortid.generate();
 
-  addContact = text => {
+  addContact = (text, number) => {
     const contact = {
       id: shortid.generate(),
       name: text,
+      number: number,
     };
-    console.log(contact);
 
     this.setState(prevState => ({
       contacts: [...prevState.contacts, contact],
@@ -40,16 +34,30 @@ class App extends Component {
   onInputChange = e => {
     const { name, value } = e.currentTarget;
     this.setState({ [name]: value });
+    console.log(name);
   };
 
   onFormSubmit = e => {
     e.preventDefault();
-    console.log(this.state.name);
-    this.addContact(this.state.name);
-    this.setState({ name: '' });
+    const { name, number } = this.state;
+
+    this.addContact(name, number);
+    this.setState({
+      name: '',
+      number: '',
+    });
+  };
+
+  changeFilter = e => {
+    this.setState({ filter: e.currentTarget.value });
   };
 
   render() {
+    const normalizedFilter = this.state.filter.toLowerCase();
+
+    const visibleContacts = this.state.contacts.filter(contact =>
+      contact.name.toLowerCase().includes(normalizedFilter),
+    );
     return (
       <Container>
         <div>
@@ -63,14 +71,32 @@ class App extends Component {
               onChange={this.onInputChange}
               id={this.nameInputId}
             />
+            <label htmlFor={this.numberInputId}>Номер</label>
+            <input
+              type="number"
+              name="number"
+              value={this.state.number}
+              onChange={this.onInputChange}
+              id={this.numberInputId}
+            />
             <button type="submit">Add contacts</button>
           </form>
         </div>
         <div>
           <h1>Contacts</h1>
+          <label htmlFor={this.filterInputId}>Поиск по имени</label>
+          <input
+            type="text"
+            value={this.state.filter}
+            onChange={this.changeFilter}
+            id={this.filterInputId}
+          />
           <ul>
-            {this.state.contacts.map(({ name, id }) => (
-              <li key={id}> {name}</li>
+            {visibleContacts.map(({ name, id, number }) => (
+              <li key={id}>
+                {' '}
+                {name}: {number}{' '}
+              </li>
             ))}
           </ul>
         </div>
