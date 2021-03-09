@@ -1,10 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const ContactListItem = ({ name, number }) => {
+const ContactListItem = ({ name, number, onDelete, contactId }) => {
   return (
     <li>
       {name}: {number}
+      <button type="button" onClick={() => onDelete(contactId)}>
+        Delete
+      </button>
     </li>
   );
 };
@@ -12,6 +15,8 @@ const ContactListItem = ({ name, number }) => {
 ContactListItem.propTypes = {
   name: PropTypes.string,
   number: PropTypes.string,
+  contactId: PropTypes.string.isRequired,
+  onDelete: PropTypes.func.isRequired,
 };
 
 ContactListItem.defaultProps = {
