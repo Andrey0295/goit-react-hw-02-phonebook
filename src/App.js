@@ -4,6 +4,7 @@ import shortid from 'shortid';
 import Container from './components/Container/Container';
 import ContactForm from './components/ContactForm/ContactForm';
 import ContactList from './components/ContactList/ContactList';
+import Filter from './components/Filter/Filter';
 
 class App extends Component {
   state = {
@@ -17,8 +18,6 @@ class App extends Component {
     filter: '',
   };
 
-  filterInputId = shortid.generate();
-
   addContact = (name, number) => {
     const contact = {
       id: shortid.generate(),
@@ -31,37 +30,46 @@ class App extends Component {
     }));
   };
 
-  handleData = data => {
+  handleContactsData = data => {
     const { name, number } = data;
-    this.addContact(name, number);
+    const { contacts } = this.state;
+
+    const getSameName = contacts.filter(
+      contact => contact.name.toLowerCase() === name.toLowerCase(),
+    );
+
+    getSameName.length > 0
+      ? alert(`${name} is already in contacts`)
+      : this.addContact(name, number);
   };
 
   changeFilter = e => {
     this.setState({ filter: e.currentTarget.value });
   };
 
-  render() {
-    const normalizedFilter = this.state.filter.toLowerCase();
+  getVisibleContacts = () => {
+    const { filter, contacts } = this.state;
+    const normalizedFilter = filter.toLowerCase();
 
-    const visibleContacts = this.state.contacts.filter(contact =>
+    return contacts.filter(contact =>
       contact.name.toLowerCase().includes(normalizedFilter),
     );
+  };
+
+  render() {
+    const visibleContacts = this.getVisibleContacts();
     return (
       <Container>
         <div>
           <h1>Phonebook</h1>
-          <ContactForm onSubmit={this.handleData} />
-        </div>
-        <div>
-          <h1>Contacts</h1>
-          <label htmlFor={this.filterInputId}>Find contact by name</label>
-          <input
-            type="text"
-            value={this.state.filter}
-            onChange={this.changeFilter}
-            id={this.filterInputId}
-          />
+          <ContactForm onSubmit={this.handleContactsData} />
 
+          <h1>Contacts</h1>
+
+          <Filter
+            filterValue={this.state.filter}
+            onChangeFilter={this.changeFilter}
+          />
           <ContactList contactsData={visibleContacts} />
         </div>
       </Container>
