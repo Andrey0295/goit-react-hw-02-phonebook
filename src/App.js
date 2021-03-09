@@ -2,27 +2,27 @@ import React, { Component } from 'react';
 import shortid from 'shortid';
 
 import Container from './components/Container/Container';
+import ContactForm from './components/ContactForm/ContactForm';
+import ContactList from './components/ContactList/ContactList';
 
 class App extends Component {
   state = {
     contacts: [
-      // { name: 'Andrey', id: 'id-1', number: ' 00 - 000 - 00 - 00' },
-      // { name: 'Seroga', id: 'id-2', number: '00 - 000 - 00 - 00 ' },
-      // { name: 'Alekma', id: 'id-3', number: '00 - 000 - 00 - 00' },
+      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+      { id: 'id-3', name: 'Harry Poter', number: '645-17-79' },
+      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
     ],
-    name: '',
-    number: '',
+
     filter: '',
   };
 
-  nameInputId = shortid.generate();
-  numberInputId = shortid.generate();
   filterInputId = shortid.generate();
 
-  addContact = (text, number) => {
+  addContact = (name, number) => {
     const contact = {
       id: shortid.generate(),
-      name: text,
+      name: name,
       number: number,
     };
 
@@ -31,21 +31,9 @@ class App extends Component {
     }));
   };
 
-  onInputChange = e => {
-    const { name, value } = e.currentTarget;
-    this.setState({ [name]: value });
-    console.log(name);
-  };
-
-  onFormSubmit = e => {
-    e.preventDefault();
-    const { name, number } = this.state;
-
+  handleData = data => {
+    const { name, number } = data;
     this.addContact(name, number);
-    this.setState({
-      name: '',
-      number: '',
-    });
   };
 
   changeFilter = e => {
@@ -62,43 +50,19 @@ class App extends Component {
       <Container>
         <div>
           <h1>Phonebook</h1>
-          <form onSubmit={this.onFormSubmit}>
-            <label htmlFor={this.nameInputId}>Имя</label>
-            <input
-              type="text"
-              name="name"
-              value={this.state.name}
-              onChange={this.onInputChange}
-              id={this.nameInputId}
-            />
-            <label htmlFor={this.numberInputId}>Номер</label>
-            <input
-              type="number"
-              name="number"
-              value={this.state.number}
-              onChange={this.onInputChange}
-              id={this.numberInputId}
-            />
-            <button type="submit">Add contacts</button>
-          </form>
+          <ContactForm onSubmit={this.handleData} />
         </div>
         <div>
           <h1>Contacts</h1>
-          <label htmlFor={this.filterInputId}>Поиск по имени</label>
+          <label htmlFor={this.filterInputId}>Find contact by name</label>
           <input
             type="text"
             value={this.state.filter}
             onChange={this.changeFilter}
             id={this.filterInputId}
           />
-          <ul>
-            {visibleContacts.map(({ name, id, number }) => (
-              <li key={id}>
-                {' '}
-                {name}: {number}{' '}
-              </li>
-            ))}
-          </ul>
+
+          <ContactList contactsData={visibleContacts} />
         </div>
       </Container>
     );
